@@ -1,33 +1,38 @@
-version: '3.8' # または適切なバージョンを指定
+version: '3.8'
 
 services:
-  # Goアプリケーションサービス
   app:
-    build: . # カレントディレクトリのDockerfileを使ってビルドする
+    build: .
     ports:
-      - "8080:8080" # ホストの8080をコンテナの8080にマッピング
+      # .env ファイルで APP_PORT=8080 のように定義
+      - "${APP_PORT:-8080}:${APP_PORT:-8080}" # デフォルト値を指定する場合
     environment:
-      # GoアプリからDBに接続するための環境変数 (例)
-      - DB_HOST=db # 下で定義するDBサービスのサービス名
-      - DB_PORT=5432
-      - DB_USER=user # 下のDBサービスで設定するユーザー名
-      - DB_PASSWORD=password # 下のDBサービスで設定するパスワード
-      - DB_NAME=mydatabase # 下のDBサービスで設定するDB名
+      # .env ファイルから読み込む変数を指定
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD} # パスワードも.envから読み込む
+      DB_NAME: ${DB_NAME}
     depends_on:
-      - db # DBサービスが起動してからappサービスを起動する
+      - db
+    # env_file: # 明示的に指定することも可能
+    #   - .env
 
-  # PostgreSQLサービス
   db:
-    image: postgres:16-alpine # 公式のPostgreSQLイメージを使用 (バージョンは適宜変更)
-    restart: always # コンテナが停止したら常に再起動する
+    image: postgres:16-alpine
+    restart: always
     environment:
-      POSTGRES_USER: user # データベースのユーザー名
-      POSTGRES_PASSWORD: password # データベースのパスワード
-      POSTGRES_DB: mydatabase # 作成するデータベース名
+      # PostgreSQLの初期設定も.envから読み込む
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD} # アプリと同じパスワード変数を使用
+      POSTGRES_DB: ${DB_NAME}
     volumes:
-      - postgres_data:/var/lib/postgresql/data # 名前付きボリュームでデータを永続化
+      - postgres_data:/var/lib/postgresql/data
     ports:
-      - "5433:5432" # ホストの5433をコンテナの5432にマッピング (デバッグ用、必須ではない)
+      # .env ファイルで DB_HOST_PORT=5433 のように定義
+      - "${DB_HOST_PORT:-5433}:5432" # デフォルト値を指定する場合
+    # env_file: # 明示的に指定することも可能
+    #   - .env
 
 volumes:
-  postgres_data: # データ永続化のための名前付きボリューム定義
+  postgres_data:
