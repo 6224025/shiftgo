@@ -1,0 +1,17 @@
+# Example .gitignore
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Binaries for programs and plugins
+*bin/
+*.out
+
+# Test binary, build artifacts
+*.test
+*.[oa]
+
+# Dependency directories (remove if you use vendoring)
+# vendor/
