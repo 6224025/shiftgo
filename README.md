@@ -29,3 +29,25 @@
 
 ```bash
 docker compose up -d --build
+```
+
+# dbコンテナの中に入る
+```
+docker compose exec db bash
+```
+# コンテナ内でpsqlコマンドを実行 (ユーザー名、DB名は.envの値)
+```
+psql -U ${DB_USER} -d ${DB_NAME}
+```
+# psqlプロンプトが表示されたら、SQLコマンドを実行できる (例: \dt でテーブル一覧)
+# 終了は \q
+
+# コンテナから抜ける
+```
+exit
+```
+## Dockerを終了する
+
+```
+docker compose down
+```
